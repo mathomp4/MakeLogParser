@@ -24,7 +24,7 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 
     rgx_list = [
         # Peel off the cd and compiler
-        '^cd.*(gfortran|ifort|nagfor|pgfortran)\s',
+        '^cd.*(gfortran-[0-9]|gfortran|ifort|nagfor|pgfortran)\s',
 
         # Remove esma_timer
         '^.*esma_timer.sh\s+[\w]*\.o\srun', 
