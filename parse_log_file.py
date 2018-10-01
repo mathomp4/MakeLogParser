@@ -26,9 +26,6 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
         # Peel off the cd and compiler
         '^cd.*(gfortran-[0-9]|gfortran|ifort|nagfor|pgfortran)\s',
 
-        # Remove esma_timer
-        '^.*esma_timer.sh\s+[\w]*\.o\srun', 
-
         # Match -I/ directories
         '\s+-I/[\w/.-]*',
 
@@ -146,7 +143,7 @@ def main():
     macros   = comm_args['macros']
     gmake    = comm_args['gmake']
     cmake    = comm_args['cmake']
-    ninja    = comm_args['ninja']
+    #ninja    = comm_args['ninja']
     fullpath = comm_args['fullpath']
 
     with open(logfile) as f:
@@ -154,8 +151,8 @@ def main():
 
     if cmake:
         output = cmake_parse(content,sortfiles,sortopts,macros,fullpath)
-    elif ninja:
-        output = ninja_parse(content,sortfiles,sortopts,macros)
+    #elif ninja:
+        #output = ninja_parse(content,sortfiles,sortopts,macros)
     else:
         output = gmake_parse(content,sortfiles,sortopts,macros)
 
@@ -209,7 +206,7 @@ def parse_args():
 
     # ninja Make Log
     # --------------
-    p.add_argument('--ninja', help="Ninja Make Log", action='store_true')
+    #p.add_argument('--ninja', help="Ninja Make Log", action='store_true')
 
     # cmake Make Log
     # --------------
