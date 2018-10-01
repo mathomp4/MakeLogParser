@@ -63,7 +63,19 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
             splitline[-1] = os.path.basename(foundfile)
 
         if sortopts:
-            splitline[0] = ' '.join( sorted(splitline[0].split()) )
+            all_opts = splitline[0]
+            multiargs = ['-assume', '-check', '-warn','-align']
+            for arg in multiargs:
+                rgx = arg + ' +(\S+)'
+                all_opts = re.sub(rgx,arg+"_\\1", all_opts)
+            
+            splitline[0] = ' '.join( sorted(all_opts.split()) )
+
+            all_opts = splitline[0]
+            for arg in multiargs:
+                rgx = arg + '_(\S+)'
+                all_opts = re.sub(rgx,arg + " \\1", all_opts)
+            splitline[0] = all_opts
 
         new_line_reversed = tuple(reversed(tuple(splitline)))
         output.append(new_line_reversed)
@@ -120,7 +132,19 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
         splitline = new_line.rsplit(' ',1)
 
         if sortopts:
-            splitline[0] = ' '.join( sorted(splitline[0].split()) )
+            all_opts = splitline[0]
+            multiargs = ['-assume', '-check', '-warn', '-align']
+            for arg in multiargs:
+                rgx = arg + ' +(\S+)'
+                all_opts = re.sub(rgx,arg+"_\\1", all_opts)
+            
+            splitline[0] = ' '.join( sorted(all_opts.split()) )
+
+            all_opts = splitline[0]
+            for arg in multiargs:
+                rgx = arg + '_(\S+)'
+                all_opts = re.sub(rgx,arg + " \\1", all_opts)
+            splitline[0] = all_opts
 
         new_line_reversed = tuple(reversed(tuple(splitline)))
         output.append(new_line_reversed)
