@@ -16,6 +16,8 @@ import re
 
 from operator import itemgetter
 
+multiargs = ['-assume', '-check', '-warn','-align','-heap-arrays','-fp-model','-extend_source']
+
 def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 
     match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
@@ -64,7 +66,6 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 
         if sortopts:
             all_opts = splitline[0]
-            multiargs = ['-assume', '-check', '-warn','-align']
             for arg in multiargs:
                 rgx = arg + ' +(\S+)'
                 all_opts = re.sub(rgx,arg+"_\\1", all_opts)
@@ -133,7 +134,6 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
 
         if sortopts:
             all_opts = splitline[0]
-            multiargs = ['-assume', '-check', '-warn', '-align']
             for arg in multiargs:
                 rgx = arg + ' +(\S+)'
                 all_opts = re.sub(rgx,arg+"_\\1", all_opts)
