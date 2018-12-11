@@ -21,8 +21,8 @@ multiargs = ['-assume', '-check', '-warn','-align','-heap-arrays','-fp-model','-
 def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 
     match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
-    F90files = filter(match_F90.match,content)
-    #print F90files
+    F90files = list(filter(match_F90.match,content))
+    #print(F90files)
 
     rgx_list = [
         # Peel off the cd and compiler
@@ -90,8 +90,8 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
 
     match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)$')
-    F90files = filter(match_F90.match,content)
-    #print F90files
+    F90files = list(filter(match_F90.match,content))
+    #print(F90files)
 
     rgx_list = [
         # Remove esma_timer
@@ -180,17 +180,17 @@ def main():
     else:
         output = gmake_parse(content,sortfiles,sortopts,macros)
 
-    #print content
+    #print(content)
 
     # This will have each line in our file as a separate member of a list
     #loginp = [[i] for i in content]
-    #print loginp
+    #print(loginp)
 
     for item in output:
         try:
-            print ("File: {}\n   Options: {}\n").format(*item)
+            print(("File: {}\n   Options: {}\n").format(*item))
         except IndexError:
-            print ("File: {}\n   Options: NONE\n").format(item[0])
+            print(("File: {}\n   Options: NONE\n").format(item[0]))
 
 def parse_args():
 
