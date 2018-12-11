@@ -236,50 +236,6 @@ def parse_args():
     # --------------
     p.add_argument('--fullpath', help="Output full paths (cmake only)", action='store_true')
 
-    ## Atmospheric Horizontal Resolution
-    ## ---------------------------------
-    #horz_choices = ['a','b','c','d','e','c12','c24','c48','c90','c180','c360','c720','c1440','c2880']
-    #p.add_argument('--horz', help="Horizontal Resolution (Default: c48 on clusters, c12 on desktop)", type=str, choices=horz_choices)
-
-    ## Atmospheric Vertical Resolution
-    ## -------------------------------
-    #vert_choices = ['72','132']
-    #p.add_argument('--vert', help="Vertical Resolution (Default: 72) ", type=str, choices=vert_choices)
-
-    ## Data Ocean
-    ## ----------
-    #ocean_choices = ['o1','o2','o3','CS']
-    #p.add_argument('--ocean', help="Data Ocean Resolution (Default: o1)", type=str, choices=ocean_choices)
-
-    ## Land Surface Model
-    ## ------------------
-    #p.add_argument('--land', help="Land Surface Model (Default: 1)", type=str, default='1', choices=['1','2'])
-
-    ## Runoff Model
-    ## ------------
-    #p.add_argument('--runoff', help="Runoff Routing Model (Default: no)", type=str, default='no',choices=['yes','no'])
-
-    ## Gocart Aerosols
-    ## ---------------
-    #p.add_argument('--gocart', help="GOCART aerosols: Actual (A) or Climatological (C) (Default: A on clusters, C on desktops)", type=str, default='A', choices=['A','C'])
-
-    ## GOCART emissions
-    ## ----------------
-    #p.add_argument('--emission', help="GOCART Emissions to use (Default: MERRA2)", type=str, default='MERRA2', 
-            #choices=['MERRA2','PIESA','CMIP','NR','MERRA2-DD','OPS'])
-
-    ## History Template to use
-    ## -----------------------
-    #p.add_argument('--history', help="History Template (Default: Current)", type=str, default='Current')
-
-    ## Account
-    ## -------
-    #p.add_argument('--account', help="Account Number to Use (Default: g0620 at NCCS, g26141 at NAS)", type=str, default='g0620')
-
-    ## Use GPU
-    ## -------
-    #p.add_argument('--gpu', help="Setup Experiment to use GPUs", action='store_true')
-
     return vars(p.parse_args())
 
 if __name__ == "__main__":
