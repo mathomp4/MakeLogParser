@@ -70,7 +70,7 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
                 rgx = arg + ' +(\S+)'
                 all_opts = re.sub(rgx,arg+"_\\1", all_opts)
             
-            splitline[0] = ' '.join( sorted(all_opts.split()) )
+            splitline[0] = ' '.join( sorted(all_opts.split(),key=str.lower) )
 
             all_opts = splitline[0]
             for arg in multiargs:
@@ -138,7 +138,7 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
                 rgx = arg + ' +(\S+)'
                 all_opts = re.sub(rgx,arg+"_\\1", all_opts)
             
-            splitline[0] = ' '.join( sorted(all_opts.split()) )
+            splitline[0] = ' '.join( sorted(all_opts.split(),key=str.lower) )
 
             all_opts = splitline[0]
             for arg in multiargs:
