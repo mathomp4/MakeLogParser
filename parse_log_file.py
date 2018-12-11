@@ -16,39 +16,9 @@ import re
 
 from operator import itemgetter
 
-multiargs = ['-assume', '-check', '-warn','-align','-heap-arrays','-fp-model','-extend_source']
+multiargs = ['-assume', '-check', '-warn','-align','-heap-arrays','-fp-model','-extend_source','-convert','-module']
 
-def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
-
-    match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
-    F90files = list(filter(match_F90.match,content))
-    #print(F90files)
-
-    rgx_list = [
-        # Peel off the cd and compiler
-        '^cd.*(gfortran-[0-9]|gfortran|ifort|nagfor|pgfortran)\s',
-
-        # Match -I/ directories
-        '\s+-I/[\w/.-]*',
-
-        # Match -Iword directories
-        '-I[\w/.-]*\s+',
-
-        # Match -I.
-        r'-I.', 
-
-        # Match -Iword directories
-        '-J[\w/.-]*\s+',
-
-        # Remove -c
-        r'-c ', 
-
-        # Remove -o
-        r'-o\s+CMakeFiles.*$'
-        ]
-
-    if not macros:
-        rgx_list.append('-D[\w/.-=]*\s+')
+def parse_options(rgx_list,F90files,sortfiles=None,sortopts=None,fullpath=None):
 
     output = []
     for line in F90files:
@@ -87,7 +57,49 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 
     return output
 
-def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
+def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
+
+    match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
+    F90files = list(filter(match_F90.match,content))
+    #print(F90files)
+
+    rgx_list = [
+        # Peel off the cd and compiler
+        '^cd.*(gfortran-[0-9]|gfortran|ifort|nagfor|pgfortran)\s',
+
+        # Match -I/ directories
+        '\s+-I/[\w/.-]*',
+
+        # Match -Iword directories
+        '-I[\w/.-]*\s+',
+
+        # Match -I.
+        r'-I.', 
+
+        # Match -Iword directories
+        '-J[\w/.-]*\s+',
+
+        # Remove -module
+        '\s+-module\s[\w/.-]*',
+
+        # Remove -c
+        r'-c ', 
+
+        # Remove -o
+        r'-o\s+CMakeFiles.*$',
+
+        ]
+
+    if not macros:
+        rgx_list.append('-D[\w/.-=]*\s+')
+
+    output = []
+
+    output = parse_options(rgx_list,F90files,sortfiles,sortopts,fullpath)
+
+    return output
+
+def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
 
     match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)$')
     F90files = list(filter(match_F90.match,content))
@@ -106,9 +118,6 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
         # Match -I.
         r'-I.',
 
-        # Match -D macros
-        #'\s+-D[\w/.-=]*', 
-
         # Remove mpi(fort|ifort|f90)
         'mpi(fort|ifort|f90|f08)\s+',
 
@@ -123,36 +132,8 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None):
         rgx_list.append('-D[\w/.-=]*\s+')
 
     output = []
-    for line in F90files:
-        new_line = line
-        for rgx in rgx_list:
-            new_line = re.sub(rgx,'',new_line)
-        new_line = re.sub(' +',' ',new_line)
-        new_line = new_line.rstrip()
 
-        splitline = new_line.rsplit(' ',1)
-
-        if sortopts:
-            all_opts = splitline[0]
-            for arg in multiargs:
-                rgx = arg + ' +(\S+)'
-                all_opts = re.sub(rgx,arg+"_\\1", all_opts)
-            
-            splitline[0] = ' '.join( sorted(all_opts.split(),key=str.lower) )
-
-            all_opts = splitline[0]
-            for arg in multiargs:
-                rgx = arg + '_(\S+)'
-                all_opts = re.sub(rgx,arg + " \\1", all_opts)
-            splitline[0] = all_opts
-
-        new_line_reversed = tuple(reversed(tuple(splitline)))
-        output.append(new_line_reversed)
-
-    if sortfiles:
-        namesort = itemgetter(0)
-        output = sorted(output,key=namesort)
-
+    output = parse_options(rgx_list,F90files,sortfiles,sortopts,fullpath)
 
     return output
  
@@ -178,7 +159,7 @@ def main():
     #elif ninja:
         #output = ninja_parse(content,sortfiles,sortopts,macros)
     else:
-        output = gmake_parse(content,sortfiles,sortopts,macros)
+        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath)
 
     #print(content)
 
