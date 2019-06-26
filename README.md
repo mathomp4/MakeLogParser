@@ -21,3 +21,9 @@ If you want to ignore the `-convert little_endian` and `-convert big_endian` fla
 
 ## Ignore endian flags
 If you want to ignore the `-qopenmp` flags add `--openmp`
+
+## Ignore extended source flags
+If you want to ignore the `-extend_source` flags add `--extend`
+
+## Ignore precision flags
+If you want to ignore the `-r8` and `-i8` flags add `--precision`
