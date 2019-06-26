@@ -57,7 +57,7 @@ def parse_options(rgx_list,F90files,sortfiles=None,sortopts=None,fullpath=None):
 
     return output
 
-def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
+def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,sed=None):
 
     match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
     F90files = list(filter(match_F90.match,content))
@@ -93,13 +93,21 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
     if not macros:
         rgx_list.append('-D[\w/.-=]*\s+')
 
+    if sed:
+        rgx_list.append('-g')
+        rgx_list.append('-fPIC')
+        rgx_list.append('-fPIE')
+        rgx_list.append('-convert big_endian')
+        rgx_list.append('-convert little_endian')
+        rgx_list.append('-fpp')
+
     output = []
 
     output = parse_options(rgx_list,F90files,sortfiles,sortopts,fullpath)
 
     return output
 
-def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
+def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,sed=None):
 
     match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)$')
     F90files = list(filter(match_F90.match,content))
@@ -131,6 +139,14 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None):
     if not macros:
         rgx_list.append('-D[\w/.-=]*\s+')
 
+    if sed:
+        rgx_list.append('-g')
+        rgx_list.append('-fPIC')
+        rgx_list.append('-fPIE')
+        rgx_list.append('-convert big_endian')
+        rgx_list.append('-convert little_endian')
+        rgx_list.append('-fpp')
+
     output = []
 
     output = parse_options(rgx_list,F90files,sortfiles,sortopts,fullpath)
@@ -150,16 +166,17 @@ def main():
     cmake    = comm_args['cmake']
     #ninja    = comm_args['ninja']
     fullpath = comm_args['fullpath']
+    sed = comm_args['sed']
 
     with open(logfile) as f:
         content = [line.rstrip() for line in f]
 
     if cmake:
-        output = cmake_parse(content,sortfiles,sortopts,macros,fullpath)
+        output = cmake_parse(content,sortfiles,sortopts,macros,fullpath,sed)
     #elif ninja:
         #output = ninja_parse(content,sortfiles,sortopts,macros)
     else:
-        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath)
+        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath,sed)
 
     #print(content)
 
@@ -215,6 +232,10 @@ def parse_args():
     # cmake Make Log
     # --------------
     p.add_argument('--fullpath', help="Output full paths (cmake only)", action='store_true')
+
+    # cmake Make Log
+    # --------------
+    p.add_argument('--sed', help="Remove extra flags", action='store_true')
 
     return vars(p.parse_args())
 
