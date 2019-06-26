@@ -57,7 +57,7 @@ def parse_options(rgx_list,F90files,sortfiles=None,sortopts=None,fullpath=None):
 
     return output
 
-def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,ignoreendian=None):
+def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,endian=None,openmp=None):
 
     match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
     F90files = list(filter(match_F90.match,content))
@@ -104,7 +104,7 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,i
     if not macros:
         rgx_list.append('-D[\w/.-=]*\s+')
 
-    if ignoreendian:
+    if endian:
         rgx_list.append('-convert big_endian')
         rgx_list.append('-convert little_endian')
 
@@ -114,7 +114,7 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,i
 
     return output
 
-def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,ignoreendian=None):
+def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,endian=None,openmp=None):
 
     match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)$')
     F90files = list(filter(match_F90.match,content))
@@ -158,9 +158,12 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,i
     if not macros:
         rgx_list.append('-D[\w/.-=]*\s+')
 
-    if ignoreendian:
+    if endian:
         rgx_list.append('-convert big_endian')
         rgx_list.append('-convert little_endian')
+
+    if openmp:
+        rgx_list.append('-qopenmp')
 
     output = []
 
@@ -181,17 +184,18 @@ def main():
     cmake    = comm_args['cmake']
     #ninja    = comm_args['ninja']
     fullpath = comm_args['fullpath']
-    ignoreendian = comm_args['ignoreendian']
+    endian = comm_args['endian']
+    openmp = comm_args['openmp']
 
     with open(logfile) as f:
         content = [line.rstrip() for line in f]
 
     if cmake:
-        output = cmake_parse(content,sortfiles,sortopts,macros,fullpath,ignoreendian)
+        output = cmake_parse(content,sortfiles,sortopts,macros,fullpath,endian,openmp)
     #elif ninja:
         #output = ninja_parse(content,sortfiles,sortopts,macros)
     else:
-        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath,ignoreendian)
+        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath,endian,openmp)
 
     #print(content)
 
@@ -250,7 +254,11 @@ def parse_args():
 
     # ignore endian
     # --------------
-    p.add_argument('--ignoreendian', help="Ignore endian flags", action='store_true')
+    p.add_argument('--endian', help="Ignore endian flags", action='store_true')
+
+    # ignore openmp
+    # --------------
+    p.add_argument('--openmp', help="Ignore openmp flags", action='store_true')
 
     return vars(p.parse_args())
 

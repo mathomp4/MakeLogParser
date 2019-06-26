@@ -17,4 +17,7 @@ Run:
 ```
 
 ## Ignore endian flags
-If you want to ignore the `-convert little_endian` and `-convert big_endian` flags add `--ignoreendian`
+If you want to ignore the `-convert little_endian` and `-convert big_endian` flags add `--endian`
+
+## Ignore endian flags
+If you want to ignore the `-qopenmp` flags add `--openmp`
