@@ -175,9 +175,8 @@ def main():
 
 def parse_args():
 
-    p = argparse.ArgumentParser(description='''Utility to quickly create experiment. 
-            At present, it creates an experiment in the same manner as gcm_setup 
-            would with home and experiment directories as usual.''')
+    p = argparse.ArgumentParser(description='''Utility to parse make and cmake
+            log files. Does not work with ninja yet.''')
 
     # Verbosity
     # ---------
