@@ -68,7 +68,7 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
         '^cd.*(gfortran-[0-9]|gfortran|ifort|nagfor|pgfortran)\s',
 
         # Match -I/ directories
-        '\s+-I/[\w/.-]*',
+        '\s+-I/[@\w/.-]*',
 
         # Match -Iword directories
         '-I[\w/.-]*\s+',
