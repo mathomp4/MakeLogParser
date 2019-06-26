@@ -108,6 +108,9 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
         rgx_list.append('-convert big_endian')
         rgx_list.append('-convert little_endian')
 
+    if openmp:
+        rgx_list.append('-qopenmp')
+
     output = []
 
     output = parse_options(rgx_list,F90files,sortfiles,sortopts,fullpath)
