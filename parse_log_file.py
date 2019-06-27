@@ -113,6 +113,8 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
 
     if not macros:
         rgx_list.append('-D[\w/.-=]*\s+')
+        rgx_list.append(r'-DVERSION=\\"fvgcm\\"')
+        rgx_list.append(r'-DFortranLlong="long long"')
 
     if endian:
         rgx_list.append('-convert big_endian')
