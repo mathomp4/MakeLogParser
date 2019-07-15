@@ -57,7 +57,7 @@ def parse_options(rgx_list,F90files,sortfiles=None,sortopts=None,fullpath=None):
 
     return output
 
-def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,endian=None,openmp=None,extend=None, precision=None):
+def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,endian=None,openmp=None,extend=None, noprecision=None):
 
     match_F90 = re.compile('^cd.*(gfortran|ifort|nagfor|pgfortran).*(\.f90|\.F90|\.F|\.f)\.o$')
     F90files = list(filter(match_F90.match,content))
@@ -126,7 +126,7 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
     if extend:
         rgx_list.append('-extend_source')
 
-    if precision:
+    if noprecision:
         rgx_list.append('-r8')
         rgx_list.append('-i8')
 
@@ -136,9 +136,10 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
 
     return output
 
-def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,endian=None,openmp=None,extend=None, precision=None):
+def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,endian=None,openmp=None,extend=None, noprecision=None):
 
-    match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)$')
+    #match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)$')
+    match_F90 = re.compile('.*mpi(fort|f90|f08|ifort).*(___\.f90|\.F90|\.F|\.f)')
     F90files = list(filter(match_F90.match,content))
     #print(F90files)
 
@@ -180,7 +181,13 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
         '-traceback',
 
         # Remove assume realloc_lhs
-        '-assume realloc_lhs'
+        '-assume realloc_lhs',
+
+        # Remove odd message from NCEP_crtm
+        'NCEP_crtm_gmake:',
+
+        # Remove 180 
+        '180'
         ]
 
     if not macros:
@@ -196,7 +203,7 @@ def gmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
     if extend:
         rgx_list.append('-extend_source')
 
-    if precision:
+    if noprecision:
         rgx_list.append('-r8')
         rgx_list.append('-i8')
 
@@ -222,17 +229,17 @@ def main():
     endian = comm_args['endian']
     openmp = comm_args['openmp']
     extend = comm_args['extend']
-    precision = comm_args['precision']
+    noprecision = comm_args['noprecision']
 
     with open(logfile) as f:
         content = [line.rstrip() for line in f]
 
     if cmake:
-        output = cmake_parse(content,sortfiles,sortopts,macros,fullpath,endian,openmp,extend,precision)
+        output = cmake_parse(content,sortfiles,sortopts,macros,fullpath,endian,openmp,extend,noprecision)
     #elif ninja:
         #output = ninja_parse(content,sortfiles,sortopts,macros)
     else:
-        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath,endian,openmp,extend,precision)
+        output = gmake_parse(content,sortfiles,sortopts,macros,fullpath,endian,openmp,extend,noprecision)
 
     #print(content)
 
@@ -303,7 +310,7 @@ def parse_args():
 
     # ignore precision
     # --------------
-    p.add_argument('--precision', help="Ignore precision source flags", action='store_true')
+    p.add_argument('--noprecision', help="Ignore precision source flags", action='store_true')
 
     return vars(p.parse_args())
 
