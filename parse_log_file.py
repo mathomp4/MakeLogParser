@@ -108,7 +108,12 @@ def cmake_parse(content,sortfiles=None,sortopts=None,macros=None,fullpath=None,e
 
         # Remove diag-disable
         '-diag-disable 6843,7712',
-        '-diag-disable 8291'
+        '-diag-disable 8291',
+
+        # Remove cmake only macros
+        '-DFORTRAN_COMPILER_SUPPORTS_ASSUMED_TYPE',
+        '-D__ifort_18',
+        '-D_TIMER_ON_'
         ]
 
     if not macros:
